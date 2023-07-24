@@ -8,17 +8,49 @@ import {
   Button,
   Grid,
   Stack,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import agent from '../api/agent';
-import { useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CreateIcon from '@mui/icons-material/Create';
+import DeleteModalRegion from './region/DeleteModal';
+import { RegionData } from '@/types/region';
+
+type ToastProperty = {
+  open: boolean;
+  message: string;
+  severity: 'success' | 'error' ;
+};
 
 const NzMain = () => {
-  const [regionsData, setRegionsData] = useState([]);
+  const [regionsData, setRegionsData] = useState<RegionData[]>([]);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [regionId, setRegionId] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState<ToastProperty>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  const handleOpen = (id: string) => {
+    setOpenDeleteModal(true);
+    setRegionId(id);
+  };
+  const handleClose = () => setOpenDeleteModal(false);
+
+  const handleSnackbarClose = (event: any, reason: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setShowToast((prevState) => ({
+      ...prevState,
+      open: false,
+    }));
+  };
 
   useEffect(() => {
-    // Function to fetch region data
     const fetchRegions = async () => {
       try {
         const regionsData = await agent.regions.getAllRegions();
@@ -36,7 +68,12 @@ const NzMain = () => {
       setRegionsData((prevData) =>
         prevData.filter((region) => region.id !== id)
       );
-      alert('Delete na vovo');
+      setShowToast({
+        open: true,
+        message: 'Region successfully deleted',
+        severity: 'success',
+      });
+      setOpenDeleteModal(false);
     } catch (error) {
       console.error('Error deleting region:', error);
     }
@@ -75,7 +112,8 @@ const NzMain = () => {
                   variant="outlined"
                   color="error"
                   startIcon={<DeleteIcon />}
-                  onClick={() => deleteRegion(id)}
+                  // onClick={() => deleteRegion(id)}
+                  onClick={() => handleOpen(id)}
                 >
                   Delete
                 </Button>
@@ -91,6 +129,23 @@ const NzMain = () => {
           </Card>
         </Grid>
       ))}
+      {openDeleteModal && regionId !== null && (
+        <DeleteModalRegion
+          regionId={regionId}
+          onDeleteRegion={() => deleteRegion(regionId)}
+          onCloseModal={handleClose}
+          showModal={openDeleteModal}
+        />
+      )}
+      <Snackbar
+        open={showToast.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert severity={showToast.severity} sx={{ width: '100%' }}>
+          {showToast.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

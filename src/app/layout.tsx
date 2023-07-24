@@ -17,8 +17,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ backgroundColor: '#D6E8DB' }}>
-        <Box sx={{ position: 'sticky', margin: '10px', paddingBottom: '50px' }}>
+      <body style={{ backgroundColor: '#F8F6F4' }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            padding: '10px',
+            backgroundColor: '#9AC5F4',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 999,
+          }}
+        >
           <Link href="/" style={{ textDecoration: 'none' }}>
             <Typography variant="h5">NZ Walks UI</Typography>
           </Link>

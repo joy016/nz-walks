@@ -41,7 +41,7 @@ const AddRegion = () => {
   });
   return (
     <>
-      <Box sx={{ margin: '0 auto', width: '60%' }}>
+      <Box sx={{ margin: '0 auto', width: '60%', paddingTop: '80px' }}>
         <Typography variant="h5" sx={{ marginBottom: '10px' }}>
           Save Region to Database
         </Typography>
